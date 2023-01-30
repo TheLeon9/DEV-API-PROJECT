@@ -5,34 +5,6 @@ const assignmentModel = require("../models/assignment.models");
 const jobModel = require("../models/job.models");
 const skillModel = require("../models/skill.models");
 
-// exports.getUser = (req, res) => {
-//   User.findById(req.userToken.id)
-//     .then((user) => {
-//       if (!user) {
-//         return res.status(404).send({
-//           message: "User have not been found",
-//         });
-//       }
-//       res.send(user);
-//     })
-//     .catch((err) => res.status(400).send(err));
-// };
-
-// exports.updateMyProfile = (req, res) => {
-//   User.findByIdAndUpdate(req.params.id, req.body)
-//     .then((user) => {
-//       if (!user) {
-//         return res.status(404).send({
-//           message: "User have not been found",
-//         });
-//       }
-//       User.findById(user._id).then((userupdated) => {
-//         res.send(userupdated);
-//       });
-//     })
-//     .catch((err) => res.status(400).send(err));
-// };
-
 // GET
 exports.getJobs = (req, res) => {
   jobModel
@@ -46,10 +18,10 @@ exports.getSkills = (req, res) => {
     .then((skills) => res.send(skills))
     .catch((err) => res.status(400).send(err));
 };
-exports.getCompanys = (req, res) => {
+exports.getCompanies = (req, res) => {
   companyModels
     .find()
-    .then((companys) => res.send(companys))
+    .then((companies) => res.send(companies))
     .catch((err) => res.status(400).send(err));
 };
 exports.getFreelances = (req, res) => {
@@ -64,55 +36,54 @@ exports.getAssignments = (req, res) => {
     .then((assignments) => res.send(assignments))
     .catch((err) => res.status(400).send(err));
 };
+
 // UPDATE
-exports.updateFreelance = (req, res) => {
-  freelanceModels.findOne({ userMail: req.body.userMail }).then((freelance) => {
+function Update(req, res, account, modelsfirst, modelsecond) {
+  modelsfirst.findOne({ userMail: req.body.userMail }).then((freelance) => {
     if (!freelance) {
-      freelanceModels
-    .findByIdAndUpdate(req.params.userid, req.body)
-    .then((freelanceselected) => {
-      if (!freelanceselected) {
-        return res.status(404).send({
-          message: "Freelance User have not been found",
-        });
-      }
-      freelanceModels.findById(freelanceselected._id).then((freelanceupdated) => {
-        res.send(freelanceupdated);
-      });
-    })
-    .catch((err) => res.status(400).send(err));
-    } else {
-      console.log("Freelance User with : " + freelance.userMail + " already Exist");
-      return res.status(404).send({
-        message: "Freelance User with : " + freelance.userMail + " already exist !",
-      });
-    }
-  });
-};
-exports.updateCompany = (req, res) => {
-  companyModels.findOne({ userMail: req.body.userMail }).then((company) => {
-    if (!company) {
-      companyModels
-      .findByIdAndUpdate(req.params.userid, req.body)
-      .then((companyselected) => {
-        if (!companyselected) {
+      modelsecond.findOne({ userMail: req.body.userMail }).then((company) => {
+        if (!company) {
+          modelsecond
+            .findByIdAndUpdate(req.params.userid, req.body)
+            .then((userselected) => {
+              if (!userselected) {
+                return res.status(404).send({
+                  message: account + " User have not been found",
+                });
+              }
+              modelsecond.findById(userselected._id).then((userupdated) => {
+                res.send(userupdated);
+              });
+            })
+            .catch((err) => res.status(400).send(err));
+        } else {
+          console.log(
+            account + " User with : " + company.userMail + " already Exist"
+          );
           return res.status(404).send({
-            message: "Company User have not been found",
+            message:
+              account + " User with : " + company.userMail + " already exist !",
           });
         }
-        companyModels.findById(companyselected._id).then((companyupdated) => {
-          res.send(companyupdated);
-        });
-      })
-      .catch((err) => res.status(400).send(err));
+      });
     } else {
-      console.log("Company User with : " + company.userMail + " already Exist");
+      console.log(
+        account + " User with : " + freelance.userMail + " already Exist"
+      );
       return res.status(404).send({
-        message: "Company User with : " + company.userMail + " already exist !",
+        message:
+          account + " User with : " + freelance.userMail + " already exist !",
       });
     }
   });
+}
+exports.updateFreelance = (req, res) => {
+  Update(req, res, "Freelance", companyModels, freelanceModels);
 };
+exports.updateCompany = (req, res) => {
+  Update(req, res, "Company", freelanceModels, companyModels);
+};
+
 exports.updateSkill = (req, res) => {
   skillModel.findOne({ skillName: req.body.skillName }).then((skill) => {
     if (!skill) {

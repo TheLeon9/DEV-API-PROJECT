@@ -69,12 +69,12 @@ const FreelanceSchema = mongoose.Schema(
       default: 100,
     },
     skills: {
-      type: Array,
-      default: [],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "skills"
     },
     jobs: {
-      type: Array,
-      default: [],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "jobs"
     },
   },
   {

@@ -1,5 +1,4 @@
 function verifyIsFreelance(req, res, next) {
-  console.log(req.userToken);
   if (req.userToken.accountType != "Freelance") {
     res.status("401").send({
       auth: false,

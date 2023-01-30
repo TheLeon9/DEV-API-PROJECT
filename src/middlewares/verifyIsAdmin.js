@@ -1,5 +1,5 @@
 function verifyIsAdmin(req, res, next) {
-  if (!req.adminToken.isAdmin) {
+  if (!req.userToken.isAdmin) {
     res.status("401").send({
       auth: false,
       message: "You must be an Admin",
@@ -8,4 +8,4 @@ function verifyIsAdmin(req, res, next) {
   next();
 }
 
-module.exports = verifyIsAdmin;
+module.exports = {verifyIsAdmin};

@@ -1,5 +1,4 @@
 function verifyIsCompany(req, res, next) {
-  console.log(req.userToken);
   if (req.userToken.accountType != "Company") {
     res.status("401").send({
       auth: false,

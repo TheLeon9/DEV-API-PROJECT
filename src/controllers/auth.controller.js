@@ -6,22 +6,30 @@ var jwt = require("jsonwebtoken");
 
 // Register Admin
 exports.registerA = async (req, res) => {
-  const newAdmin = new Admin(req.body);
-  newAdmin
-    .save()
-    .then((admin) => {
-      res.status(201).send({
-        message:
-          "Admin : " +
-          admin.firstName +
-          " | " +
-          admin.lastName +
-          " has been registered !",
+  Admin.find().then((admin) => {
+    if (!admin) {
+      const newAdmin = new Admin(req.body);
+      newAdmin
+        .save()
+        .then((admin) => {
+          res.status(201).send({
+            message:
+              "Admin : " +
+              admin.firstName +
+              " | " +
+              admin.lastName +
+              " has been registered !",
+          });
+        })
+        .catch((err) => {
+          res.status(400).send(err);
+        });
+    }else{
+      return res.status(404).send({
+        message: "An Admin already exist",
       });
-    })
-    .catch((err) => {
-      res.status(400).send(err);
-    });
+    }
+  });
 };
 
 // Register Company
@@ -67,7 +75,7 @@ exports.registerF = async (req, res) => {
 };
 
 // Function for LogIn
-function Search(req, res, userdata){
+function Search(req, res, userdata) {
   let passwordValid = bcrypt.compareSync(
     req.body.userPassword,
     userdata.userPassword
@@ -87,7 +95,7 @@ function Search(req, res, userdata){
     },
     process.env.JWT_SECRET
   );
-  console.log(userdata.userMail +" | Is now Connected")
+  console.log(userdata.userMail + " | Is now Connected");
   res.send({
     message:
       "The " +
@@ -103,28 +111,28 @@ function Search(req, res, userdata){
 }
 // Login
 exports.login = (req, res) => {
-  Company.findOne({ userMail: req.body.userMail }).then (userdata =>{
-    if(userdata){
+  Company.findOne({ userMail: req.body.userMail }).then((userdata) => {
+    if (userdata) {
       console.log("User find in Company");
-      Search(req, res, userdata)
+      Search(req, res, userdata);
     }
-    if(!userdata){
+    if (!userdata) {
       console.log("User not find in Company");
-      Freelance.findOne({ userMail: req.body.userMail }).then(userdataF => {
+      Freelance.findOne({ userMail: req.body.userMail }).then((userdataF) => {
         console.log("Search in Freelance");
-        if(userdataF){
+        if (userdataF) {
           console.log("User find in Freelance");
-          Search(req, res, userdataF)
+          Search(req, res, userdataF);
         }
-        if(!userdataF){
+        if (!userdataF) {
           console.log("User not find in Freelance");
           return res.status(404).send({
-                message: "User " + req.body.userMail + " have not been found",
+            message: "User " + req.body.userMail + " have not been found",
           });
         }
-      })
+      });
     }
-  })  
+  });
 };
 
 // Login Admin
@@ -154,7 +162,7 @@ exports.loginA = (req, res) => {
         },
         process.env.JWT_SECRET
       );
-      console.log(admin.adminMail +" | Admin is now Connected")
+      console.log(admin.adminMail + " | Admin is now Connected");
       res.send({
         message:
           "the " +
