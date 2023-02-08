@@ -8,5 +8,6 @@ router.post("/registerCompany", checkUserData,  checkCompanyData, validation, au
 router.post("/registerFreelance", checkUserData,  checkFreelanceData, validation, authController.registerF);
 router.post("/login", checkLoginUser, validation, authController.login);
 router.post("/loginAdmin", checkLoginAdmin, validation, authController.loginA);
+router.put("/updateMyForgottenPassword", authController.updateMyForgottenPassword);
 
 module.exports = router;

@@ -43,10 +43,12 @@ const CompanySchema = mongoose.Schema(
     userAddress: {
       type: String,
       default: "",
+      lowercase: true,
     },
     userCity: {
       type: String,
       default: "",
+      lowercase: true,
     },
     userPostal: {
       type: Number,
@@ -79,11 +81,13 @@ const CompanySchema = mongoose.Schema(
     companyHeadOfficeCity: {
       type: String,
       required: true,
+      lowercase: true,
     },
     // Pas Require
     companyHeadOfficeAddress: {
       type: String,
       default: "",
+      lowercase: true,
     },
     companyHeadOfficePostal: {
       type: Number,

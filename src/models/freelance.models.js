@@ -42,10 +42,12 @@ const FreelanceSchema = mongoose.Schema(
     },
     userAddress: {
       type: String,
+      lowercase: true,
       default: "",
     },
     userCity: {
       type: String,
+      lowercase: true,
       default: "",
     },
     userPostal: {

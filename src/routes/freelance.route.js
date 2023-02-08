@@ -3,12 +3,26 @@ const router = express.Router();
 const freelanceController = require("../controllers/freelance.controller");
 const verifyToken = require("../middlewares/verifyToken");
 const verifyIsFreelance = require("../middlewares/verifyIsFreelance");
+const {
+  checkUserData,
+  checkFreelanceData,
+  validation,
+} = require("../middlewares/validators");
 
-// router.get("/",verifyToken,  freelanceController.getFreelance);
-// router.get("/Freelance", verifyToken, verifyIsFreelance, freelanceController.getFreelance);
-// router.put("/updateMyProfil/:myid", freelanceController.updateMyProfil);
+router.get(
+  "/",
+  verifyToken,
+  verifyIsFreelance,
+  freelanceController.getFreelance
+);
 
-// router.post("/AcceptTask/:taskid", freelanceController.AcceptTask)
-// router.post("/DenyTask/:taskid", freelanceController.DenyTask)
-
+router.put(
+  "/updateMyProfile",
+  checkUserData,
+  checkFreelanceData,
+  validation,
+  verifyToken,
+  verifyIsFreelance,
+  freelanceController.updateMyProfile
+);
 module.exports = router;

@@ -24,7 +24,7 @@ exports.registerA = async (req, res) => {
         .catch((err) => {
           res.status(400).send(err);
         });
-    }else{
+    } else {
       return res.status(404).send({
         message: "An Admin already exist",
       });
@@ -177,4 +177,42 @@ exports.loginA = (req, res) => {
       });
     })
     .catch((err) => res.Status(400).send(err));
+};
+
+// Forgot Password
+function update(req, res, models, id){
+  models
+  .findByIdAndUpdate(id, req.body.userPassword)
+  .then((userSelected) => {
+    if (!userSelected) {
+      return res.status(404).send({
+        message: "User have not been found",
+      });
+    }
+    models.findById(userSelected._id).then((passwordUpdate) => {
+      res.send(passwordUpdate);
+    });
+  })
+  .catch((err) => res.status(400).send(err));
+}
+exports.updateMyForgottenPassword = (req, res) => {
+  Freelance.findOne({ userMail: req.body.userMail }).then((freelance) => {
+    if (!freelance) {
+      Company.findOne({ userMail: req.body.userMail }).then((company) => {
+        if (!company) {
+          console.log(
+            "User with : " + req.body.userMail + " doesn't Exist !"
+          );
+          return res.status(404).send({
+            message:
+              "User with : " + req.body.userMail + " doesn't Exist !",
+          });
+        } else {
+              update(req, res, Company, company._id)
+        }
+      });
+    } else {
+      update(req, res, Freelance, freelance._id)
+    }
+  });
 };

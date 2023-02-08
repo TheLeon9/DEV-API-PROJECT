@@ -6,14 +6,14 @@ const freelanceModels = require("../models/freelance.models");
 exports.getCompany = (req, res) => {
   companyModels
     .findById(req.userToken.id)
-    .then((freelance) => {
-      if (!freelance) {
+    .then((company) => {
+      if (!company) {
         return res.status(404).send({
           message: "The User Company have not been found",
         });
       }
       console.log("The Company have been found");
-      res.send(freelance);
+      res.send(company);
     })
     .catch((err) => res.status(400).send(err));
 };
@@ -32,9 +32,39 @@ exports.getFreelanceProfile = (req, res) => {
     .catch((err) => res.status(400).send(err));
 };
 exports.getAllFreelances = (req, res) => {
+  let minTax =  req.body.minTax; 
+  let maxTax =  req.body.maxTax;
+  let minYearEx =  req.body.minYearEx;
+  let maxYearEx =  req.body.maxYearEx;
   freelanceModels
     .find()
-    .then((freelances) => res.send(freelances))
+    .then((freelances) => {
+      if (
+        minTax != undefined &&
+        maxTax != undefined &&
+        minYearEx != undefined &&
+        maxYearEx != undefined
+      ) {
+        console.log("filter");
+        let arr = [];
+        for (let valeur of freelances) {
+          if(valeur.dailyTax >= minTax && valeur.dailyTax <= maxTax && valeur.yearEx >= minYearEx && valeur.yearEx <= maxYearEx ){
+            arr.push(valeur)
+          }
+        }
+        if(arr.length != 0){
+          res.send(arr);
+          console.log("Users found");
+        }else{
+          return res.status(404).send({
+            message: "Nobody Found with this filter",
+          });
+        }
+      }else{
+        console.log("no filter");
+        res.send(freelances);
+      }
+    })
     .catch((err) => res.status(400).send(err));
 };
 
@@ -69,11 +99,11 @@ exports.updateMyProfile = (req, res) => {
       });
     } else {
       console.log(
-        "Company User with : " + freelance.userMail + " already Exist"
+        "Freelance User with : " + freelance.userMail + " already Exist"
       );
       return res.status(404).send({
         message:
-          "Company User with : " + freelance.userMail + " already exist !",
+          "Freelance User with : " + freelance.userMail + " already exist !",
       });
     }
   });
