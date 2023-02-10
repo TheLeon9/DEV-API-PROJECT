@@ -70,14 +70,22 @@ const FreelanceSchema = mongoose.Schema(
       type: Number,
       default: 100,
     },
-    skills: {
+    skills: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "skills"
-    },
-    jobs: {
+    }],
+    jobs: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "jobs"
-    },
+    }],
+    assignements: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "assignments"
+    }],
+    assignementsAccepted: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "assignments"
+    }],
   },
   {
     timestamps: true,

@@ -25,4 +25,16 @@ router.put(
   verifyIsFreelance,
   freelanceController.updateMyProfile
 );
+router.post(
+  "/AcceptAssignment",
+  verifyToken,
+  verifyIsFreelance,
+  freelanceController.acceptTasks
+);
+router.post(
+  "/DeclineAssignment",
+  verifyToken,
+  verifyIsFreelance,
+  freelanceController.declineTasks
+);
 module.exports = router;

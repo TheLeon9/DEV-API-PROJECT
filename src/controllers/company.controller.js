@@ -32,10 +32,10 @@ exports.getFreelanceProfile = (req, res) => {
     .catch((err) => res.status(400).send(err));
 };
 exports.getAllFreelances = (req, res) => {
-  let minTax =  req.body.minTax; 
-  let maxTax =  req.body.maxTax;
-  let minYearEx =  req.body.minYearEx;
-  let maxYearEx =  req.body.maxYearEx;
+  let minTax = req.body.minTax;
+  let maxTax = req.body.maxTax;
+  let minYearEx = req.body.minYearEx;
+  let maxYearEx = req.body.maxYearEx;
   freelanceModels
     .find()
     .then((freelances) => {
@@ -48,19 +48,24 @@ exports.getAllFreelances = (req, res) => {
         console.log("filter");
         let arr = [];
         for (let valeur of freelances) {
-          if(valeur.dailyTax >= minTax && valeur.dailyTax <= maxTax && valeur.yearEx >= minYearEx && valeur.yearEx <= maxYearEx ){
-            arr.push(valeur)
+          if (
+            valeur.dailyTax >= minTax &&
+            valeur.dailyTax <= maxTax &&
+            valeur.yearEx >= minYearEx &&
+            valeur.yearEx <= maxYearEx
+          ) {
+            arr.push(valeur);
           }
         }
-        if(arr.length != 0){
+        if (arr.length != 0) {
           res.send(arr);
           console.log("Users found");
-        }else{
+        } else {
           return res.status(404).send({
             message: "Nobody Found with this filter",
           });
         }
-      }else{
+      } else {
         console.log("no filter");
         res.send(freelances);
       }
@@ -136,27 +141,50 @@ exports.deleteTask = (req, res) => {
 };
 // CREATE
 exports.createTask = (req, res) => {
-  assignmentModels
-    .create(req.body)
-    .then((task) => {
-      console.log(task.assignmentStatus);
+  const newTask = new assignmentModels(req.body);
+  if (
+    req.body.assignmentStatus != "en cours" &&
+    req.body.assignmentStatus != "clôturé"
+  ) {
+    return res.status(404).send({
+      message: "Choose between en |en cours| or |clôturé| for the status !",
+    });
+  } else {
+    if (req.body.assignmentPeopleId.length > 3 && req.body.assignmentPeopleId.length > 0) {
+      return res.status(404).send({
+        message: "You need to assign 3 Freelances at max And 1 at min !",
+      });
+    } else {
       if (
-        task.assignmentStatus != "en cours" &&
-        task.assignmentStatus != "clôturé"
+        newTask.assignmentPeopleId[0].equals(newTask.assignmentPeopleId[1]) ||
+        newTask.assignmentPeopleId[0].equals(newTask.assignmentPeopleId[2]) ||
+        newTask.assignmentPeopleId[1].equals(newTask.assignmentPeopleId[2])
       ) {
         return res.status(404).send({
-          message: "Choose between en |en cours| or |clôturé| for the status !",
+          message: "You need to select 3 different Freelances !",
         });
       } else {
-        if (task.assignmentPeopleId.length > 3) {
-          return res.status(404).send({
-            message: "You need to assign 3 Freelances at max !",
-          });
-        } else {
-          console.log("Task : " + task.assignmentTitle + " created !");
-          res.send(task);
-        }
+        console.log("Task : " + req.body.assignmentTitle + " created !");
+        assignmentModels
+          .create(req.body)
+          .then((task) => {
+            for (
+              let index = 0;
+              index < task.assignmentPeopleId.length;
+              index++
+              ) {
+              freelanceModels
+              .findByIdAndUpdate(
+                { _id: task.assignmentPeopleId[index] },
+                { $push: { assignements: task._id } }
+                )
+              }
+              res.status(200).send({
+                message: "Freelance(s) have been added"
+              });
+          })
+          .catch((err) => res.status(404).send(err));
       }
-    })
-    .catch((err) => res.status(404).send(err));
+    }
+  }
 };
